@@ -1,0 +1,50 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+
+/* Design tokens (docs/code-style-react.md, "Styles"). No hard-coded colours in components. */
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink-50: oklch(0.985 0.002 260);
+  --color-ink-100: oklch(0.94 0.005 260);
+  --color-ink-600: oklch(0.45 0.02 260);
+  --color-ink-900: oklch(0.2 0.02 260);
+  --color-accent-600: oklch(0.5 0.15 255);
+  --color-accent-700: oklch(0.43 0.15 255);
+
+  /* One colour per process type, as in the original prototype. */
+  --color-type-initiative: var(--color-orange-600);
+  --color-type-assembly: var(--color-emerald-600);
+  --color-type-consultation: var(--color-sky-600);
+  --color-type-electoral: var(--color-violet-600);
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center rounded-full bg-accent-600 px-5 py-2.5 font-medium text-white
+      hover:bg-accent-700 focus-visible:outline-2 focus-visible:outline-offset-2
+      focus-visible:outline-accent-600;
+  }
+  .btn-small {
+    @apply px-4 py-1.5 text-sm;
+  }
+  .nav-link {
+    @apply text-ink-600 underline-offset-4 hover:text-ink-900 hover:underline
+      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-600
+      aria-[current=page]:font-semibold aria-[current=page]:text-ink-900;
+  }
+  .pill {
+    @apply inline-block rounded-full border border-ink-100 bg-ink-50 px-3 py-1 text-sm text-ink-600;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

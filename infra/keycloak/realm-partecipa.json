@@ -1,0 +1,125 @@
+{
+  "realm": "partecipa",
+  "displayName": "Partecipa",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "verifyEmail": true,
+  "resetPasswordAllowed": true,
+  "rememberMe": false,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "failureFactor": 5,
+  "waitIncrementSeconds": 60,
+  "maxFailureWaitSeconds": 900,
+  "maxDeltaTimeSeconds": 43200,
+  "passwordPolicy": "length(12) and maxLength(128) and notEmail and notUsername",
+  "internationalizationEnabled": true,
+  "supportedLocales": ["it", "en"],
+  "defaultLocale": "it",
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "smtpServer": {
+    "host": "mailpit",
+    "port": "1025",
+    "from": "noreply@partecipa.local",
+    "fromDisplayName": "Partecipa",
+    "auth": "false",
+    "ssl": "false",
+    "starttls": "false"
+  },
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Platform administrator: verifies organisations, sees the export log"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "partecipa-web",
+      "name": "Partecipa web",
+      "description": "The React Router server (backend for frontend)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "dev-partecipa-web-secret",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:5173/auth/callback",
+        "http://localhost:3000/auth/callback"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:5173/##http://localhost:3000/"
+      },
+      "protocolMappers": [
+        {
+          "name": "audience partecipa-api",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "partecipa-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "partecipa-api-admin",
+      "name": "Partecipa API admin",
+      "description": "Service account of the API, only for deleting users",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "dev-partecipa-api-admin-secret",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "defaultClientScopes": ["basic", "roles", "kc-admin-api"],
+      "optionalClientScopes": []
+    }
+  ],
+  "users": [
+    {
+      "username": "service-account-partecipa-api-admin",
+      "enabled": true,
+      "serviceAccountClientId": "partecipa-api-admin",
+      "clientRoles": {
+        "realm-management": ["manage-users"]
+      }
+    },
+    {
+      "username": "admin@partecipa.local",
+      "email": "admin@partecipa.local",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Dev",
+      "lastName": "Admin",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev-admin-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["default-roles-partecipa", "admin"],
+      "requiredActions": ["CONFIGURE_TOTP"]
+    }
+  ]
+}

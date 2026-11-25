@@ -5,8 +5,11 @@ like the texts people read. API paths and JSON fields are in English and live un
 `/api/v1`. The OpenAPI document (`/api/v1/docs` in `dev`) is the detailed contract; this page
 is the map.
 
-**Status:** not built yet. When a page or an endpoint is built, say so here, and link the
-endpoint's row to its controller.
+**Status:** built by the scaffold (branch `feature/scaffold`, 2026-11-25): the pages `/`
+(placeholder), `/come-funziona`, `/privacy`, the 404 page, `/entra` and `/registrati` as
+"coming soon" placeholders, `/lingua/:code`, `/healthz`, and the API's operations endpoints.
+Everything else is not built yet. When a page or an endpoint is built, say so here, and link
+the endpoint's row to its controller.
 
 ## Pages (React Router routes, listed in `frontend/app/routes.ts`)
 
@@ -33,6 +36,7 @@ endpoint's row to its controller.
 | `GET /registrati?next=` | redirect to Keycloak's registration page |
 | `GET /auth/callback` | finishes the login, creates the session, redirects to `next` |
 | `POST /esci` | ends the session here and in Keycloak, redirects to `/` |
+| `GET /healthz` | liveness of the web server: `{"status":"UP"}` |
 | `GET /lingua/:code` | `it` or `en`: stores the language in the session (and on the account, if logged in) and answers 302 to the path and query of the `Referer`, never its host; to `/` without a `Referer` or when the path starts with `//` |
 
 Details of the flow: [privacy-and-security.md](privacy-and-security.md).
@@ -94,4 +98,8 @@ card shows depends on the type: initiative `signatures` of `target`, assembly
 | Endpoint | Access |
 |---|---|
 | `GET /api/v1/actuator/health/liveness`, `/readiness` | load balancer |
-| `GET /api/v1/docs` | `dev` only |
+| `GET /api/v1/actuator/health` | public: overall status only, no details |
+| `GET /api/v1/docs` (OpenAPI JSON), `/api/v1/docs/ui` (Swagger UI) | `dev` only |
+
+Every API path, operations included, is under the servlet context path `/api/v1`
+(`server.servlet.context-path`).

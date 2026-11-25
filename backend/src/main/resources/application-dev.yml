@@ -1,0 +1,19 @@
+# Local stack from infra/compose.yaml. Dev-only credentials.
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/partecipa
+    username: partecipa
+    password: partecipa
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/partecipa
+
+springdoc:
+  # Lists the health endpoints too, so the front end's generated types have them.
+  show-actuator: true
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

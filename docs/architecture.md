@@ -135,12 +135,16 @@ frontend/app
 ├── routes.ts         route config: every URL → a route module
 ├── entry.server.tsx  server render: security headers, per-request CSP nonce
 ├── core/
-│   ├── auth/         OIDC client, login/callback/logout routes, session storage (Valkey),
-│   │                 token refresh, requireUser(), Origin check on writes
-│   ├── api/          API client (base URL, bearer token, ProblemDetail → error code),
-│   │                 generated OpenAPI types
-│   ├── i18n/         i18next setup, language switch
-│   └── layout/       header, footer, skip link
+│   ├── config.server.ts  environment variables, validated at first use
+│   ├── security/     root middleware: per-request CSP nonce, security headers
+│   ├── session/      session storage on Valkey (cookie holds only the signed id)
+│   ├── auth/         (step 2) OIDC client, login/callback/logout routes, token refresh,
+│   │                 requireUser(), Origin check on writes
+│   ├── api/          API client (openapi-fetch: base URL, bearer token, ProblemDetail →
+│   │                 ApiError), generated OpenAPI types in schema.ts
+│   ├── i18n/         i18next per language, `meta` helpers, /lingua/:code
+│   ├── health/       /healthz
+│   └── layout/       header, footer, skip link, 404 and error page, focus on navigation
 ├── shared/           presentational UI: buttons, pills, cards, progress bar, vote buttons,
 │                     timeline, counters, date and number formatting
 ├── styles/           Tailwind entry and design tokens
@@ -181,7 +185,8 @@ command line. Details and the production topology: [infrastructure.md](infrastru
   Secrets only from environment variables.
 - Front end (server only): `PUBLIC_ORIGIN`, `API_ORIGIN`, `OIDC_ISSUER`, `OIDC_CLIENT_ID`,
   `OIDC_CLIENT_SECRET`, `SESSION_SECRET`, `VALKEY_URL`, `PORT`. In `dev` they come from
-  `frontend/.env` (git-ignored), created from `frontend/.env.example`. Nothing secret reaches
+  `frontend/.env` (git-ignored), created from `frontend/.env.example` and loaded by
+  `core/config.server.ts` (it never overrides variables already set). Nothing secret reaches
   the browser bundle.
 
 ## Language and server rendering
@@ -193,15 +198,19 @@ command line. Details and the production topology: [infrastructure.md](infrastru
   at once. The server creates one i18next instance per request.
 - Every page is rendered per request, never prerendered. A catch-all route answers unknown
   URLs with the 404 page and status 404.
-- `entry.server.tsx` sets the security headers and a per-request CSP nonce, passed to
-  `renderToPipeableStream`, `<Scripts>` and `<ScrollRestoration>`.
+- A root middleware (`core/security/security.server.ts`) creates a per-request CSP nonce and
+  sets the security headers on every response, resource routes included. `entry.server.tsx`
+  reads the nonce from the router context and passes it to `renderToPipeableStream`,
+  `<ServerRouter>`, `<Scripts>` and `<ScrollRestoration>`. Under `npm run dev` the policy
+  allows inline scripts and styles for Vite's hot reload; the production build is strict.
 
 ## Build order
 
 Each step is one `feature` task (and one GitHub issue). Mark a step done here when it is
 merged.
 
-1. **Scaffold** — `infra/compose.yaml` with PostgreSQL, Keycloak (dev realm: registration
+1. **Scaffold** *(built on branch `feature/scaffold`, 2026-11-25; mark done when merged)* —
+   `infra/compose.yaml` with PostgreSQL, Keycloak (dev realm: registration
    with email verification, clients `partecipa-web` and `partecipa-api-admin`, role `admin`),
    Valkey and Mailpit; `backend/` with Spring Boot, Spring Modulith, resource server, Flyway,
    Testcontainers and the module verification test; `frontend/` with React Router SSR,

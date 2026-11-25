@@ -11,9 +11,10 @@ browser checks the pages.
 | front end | `cd frontend && npm run lint && npm test && npm run build` | ESLint, Prettier check, type check, Vitest, production SSR build |
 | end to end | `cd frontend && npm run e2e` | Playwright flows and axe checks against the full local stack |
 
-`./mvnw verify` needs Docker running (Testcontainers). CI
-([.github/workflows/ci.yml](../.github/workflows/ci.yml)) runs the first two on every pull
-request; GitHub's Ubuntu runners have Docker.
+`./mvnw verify` needs Docker running (Testcontainers); `npm run e2e` needs Valkey from the local
+stack and starts the production build on port 3000 itself. CI
+([.github/workflows/ci.yml](../.github/workflows/ci.yml)) runs all three on every pull request,
+plus a check of `infra/compose.yaml` and the realm JSON; GitHub's Ubuntu runners have Docker.
 
 ## Back end
 
@@ -57,9 +58,14 @@ request; GitHub's Ubuntu runners have Docker.
   paths, a token near expiry is refreshed once, writes without a matching `Origin` are
   rejected. The OIDC provider is stubbed.
 - Every translation key exists in both `it.json` and `en.json` (a test compares the key sets).
-- No hydration warnings: a test renders the main pages on the server and hydrates them with
-  the same data, failing on any console error.
-- **End-to-end** with Playwright at 375 px and 1280 px against the local stack: register,
+- No hydration warnings: every end-to-end test fails on any console error or uncaught
+  exception (`e2e/fixtures.ts`), which catches hydration mismatches and scripts blocked by the
+  CSP.
+- Vitest runs without globals: `test/setup.ts` registers Testing Library's cleanup, and
+  `test/render.tsx` renders a page inside a router and the i18n provider.
+- **End-to-end** with Playwright at 375 px and 1280 px against the production build. Built by
+  the scaffold: every page renders and is accessible, 404 status, skip link, language switch,
+  focus after navigation, no cookie for visitors. From step 2, against the local stack: register,
   open the verification e-mail through Mailpit's API, log in, sign an initiative, vote a
   statement, ask a question, export the data, delete the account. Each page runs axe and fails
   on serious or critical violations.
