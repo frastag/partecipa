@@ -1,0 +1,108 @@
+{
+  "meta": {
+    "siteTitle": "Partecipa — deciding together",
+    "pageTitle": "{{page}} — Partecipa",
+    "description": "Popular initiatives, citizens' assemblies selected by lot, consultations and public questions to candidates and elected representatives."
+  },
+  "layout": {
+    "skipLink": "Skip to content",
+    "home": "Partecipa, home page",
+    "mainNav": "Main",
+    "menu": {
+      "initiatives": "Initiatives",
+      "assemblies": "Assemblies",
+      "consultations": "Consultations",
+      "representatives": "Candidates and elected",
+      "howItWorks": "How it works"
+    },
+    "language": {
+      "switch": "IT",
+      "switchLabel": "Italiano",
+      "switchLang": "it"
+    },
+    "signIn": "Log in",
+    "register": "Sign up",
+    "footer": {
+      "tagline": "Civic participation, open to everyone.",
+      "nav": "Information",
+      "privacy": "Privacy and data",
+      "howItWorks": "How it works"
+    }
+  },
+  "errors": {
+    "notFound": {
+      "title": "404",
+      "text": "This page does not exist, or is not public.",
+      "back": "Back to home"
+    },
+    "generic": {
+      "title": "Something went wrong",
+      "text": "Please try again in a moment.",
+      "back": "Back to home"
+    }
+  },
+  "account": {
+    "soon": {
+      "title": "Sign-in coming soon",
+      "text": "Registration and sign-in will be available soon. Meanwhile you can read everything without an account.",
+      "back": "Back to home"
+    }
+  },
+  "home": {
+    "pill": "Civic participation, open to everyone",
+    "title": "Public decisions are made here too.",
+    "text": "Popular initiatives, citizens' assemblies selected by lot, consultations and public questions to candidates and elected representatives. The first processes are coming soon.",
+    "howItWorks": "See how it works"
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "people": {
+      "title": "For people",
+      "intro": "Reading is free, no account needed. To take part you sign up with your email, first and last name, confirm the address from the message you receive and choose a password. From there you can do four things."
+    },
+    "initiatives": {
+      "title": "Popular initiatives",
+      "text": "You read the text, support it, propose amendments and discuss them. When the law requires a legally valid signature, the page takes you to the public platform where you sign with your electronic ID: support given here helps organise the campaign, it does not replace the signature."
+    },
+    "assemblies": {
+      "title": "Citizens' assemblies selected by lot",
+      "text": "You apply stating gender, age group, education and where you live. A stratified lottery builds a group that resembles the population. The lottery is public: seed, anonymous list and program can be downloaded and anyone can re-run it. Selected members write and vote on recommendations; everyone can read them and send contributions."
+    },
+    "consultations": {
+      "title": "Consultations",
+      "text": "One statement at a time you say whether you agree, disagree or pass, and you can add your own. This shows where there is consensus and what divides."
+    },
+    "representatives": {
+      "title": "Candidates and elected",
+      "text": "Ask questions to those who joined and support other people's questions: the most supported rise to the top. Answers are public, and next to each name you see how many questions they answered."
+    },
+    "organizations": {
+      "title": "For organisations",
+      "text": "Associations, committees, parties and institutions request a space; once verified they can open processes, run in-person and online meetings, moderate, run lotteries and export supporters. Every process can be embedded in their own website with one line of code."
+    }
+  },
+  "privacy": {
+    "title": "Privacy and data",
+    "draft": "Working draft: before going live it must be completed with the platform operator's details and reviewed by a data protection specialist.",
+    "responsibilities": {
+      "title": "Who is responsible for what",
+      "text": "For the account (email, first and last name, the name you appear with, language) the controller is the platform operator. For each process the controller is the organisation running it: the platform processes data on its behalf, as processor, under a written agreement."
+    },
+    "organizationSees": {
+      "title": "What the organisation sees",
+      "text": "For initiative supporters: first name, surname, town and date. The email only if the person ticked the consent to be contacted. For assembly applicants: nothing personal before the lottery; afterwards, only the contacts of selected members and reserves. Every export is recorded in a log."
+    },
+    "collection": {
+      "title": "What we collect, and what we do not",
+      "text": "Only what is needed: your email, first and last name to sign up, the data you enter when you support or apply. Demographic characteristics are used only for that assembly's lottery. No tracking, no advertising. The site has a single cookie, the session cookie; when you sign in, the sign-in service uses its own technical cookies, only for signing in."
+    },
+    "rights": {
+      "title": "Your rights, right away",
+      "text": "From your space you can download all your data in one file and delete your account at any time: support, votes, applications and registrations are deleted, together with your sign-in credentials; proposals and comments stay without a name. You can withdraw your support or an application from the process page."
+    },
+    "security": {
+      "title": "Security",
+      "text": "You choose your password and only the sign-in service keeps it, in a form nobody can read: the rest of the platform never sees it. After too many wrong attempts sign-in is blocked for a few minutes, and administrators use a second factor. Data is stored on servers in the European Union, with encrypted backups."
+    }
+  }
+}

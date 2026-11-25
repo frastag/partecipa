@@ -1,0 +1,108 @@
+{
+  "meta": {
+    "siteTitle": "Partecipa — decidere insieme",
+    "pageTitle": "{{page}} — Partecipa",
+    "description": "Iniziative popolari, assemblee civiche sorteggiate, consultazioni e domande pubbliche a candidati ed eletti."
+  },
+  "layout": {
+    "skipLink": "Vai al contenuto",
+    "home": "Partecipa, pagina iniziale",
+    "mainNav": "Principale",
+    "menu": {
+      "initiatives": "Iniziative",
+      "assemblies": "Assemblee",
+      "consultations": "Consultazioni",
+      "representatives": "Candidati ed eletti",
+      "howItWorks": "Come funziona"
+    },
+    "language": {
+      "switch": "EN",
+      "switchLabel": "English",
+      "switchLang": "en"
+    },
+    "signIn": "Entra",
+    "register": "Registrati",
+    "footer": {
+      "tagline": "Partecipazione civica, aperta a tutti.",
+      "nav": "Informazioni",
+      "privacy": "Privacy e dati",
+      "howItWorks": "Come funziona"
+    }
+  },
+  "errors": {
+    "notFound": {
+      "title": "404",
+      "text": "Questa pagina non esiste, o non è pubblica.",
+      "back": "Torna all'inizio"
+    },
+    "generic": {
+      "title": "Qualcosa è andato storto",
+      "text": "Riprova tra qualche istante.",
+      "back": "Torna all'inizio"
+    }
+  },
+  "account": {
+    "soon": {
+      "title": "Accesso in arrivo",
+      "text": "La registrazione e l'accesso saranno disponibili a breve. Intanto puoi leggere tutto senza un account.",
+      "back": "Torna all'inizio"
+    }
+  },
+  "home": {
+    "pill": "Partecipazione civica, aperta a tutti",
+    "title": "Le decisioni pubbliche si prendono anche da qui.",
+    "text": "Iniziative popolari, assemblee civiche estratte a sorte, consultazioni e domande pubbliche a candidati ed eletti. I primi percorsi arrivano presto.",
+    "howItWorks": "Scopri come funziona"
+  },
+  "howItWorks": {
+    "title": "Come funziona",
+    "people": {
+      "title": "Per le persone",
+      "intro": "Leggere è libero, senza account. Per partecipare ti registri con email, nome e cognome, confermi l'indirizzo dal messaggio che ti arriva e scegli una password. Da lì puoi fare quattro cose."
+    },
+    "initiatives": {
+      "title": "Iniziative popolari",
+      "text": "Leggi il testo, lo sottoscrivi, proponi modifiche e ne discuti. Quando la legge prevede una firma con valore legale, la pagina ti porta alla piattaforma pubblica dove si firma con SPID o CIE: la sottoscrizione qui serve a organizzare la campagna, non la sostituisce."
+    },
+    "assemblies": {
+      "title": "Assemblee civiche estratte a sorte",
+      "text": "Ti candidi indicando genere, fascia d'età, titolo di studio e dove vivi. Un sorteggio stratificato compone un gruppo che somiglia alla popolazione. Il sorteggio è pubblico: seme, elenco anonimo e programma sono scaricabili e chiunque può rifarlo. Le persone estratte scrivono e votano le raccomandazioni; tutti possono leggerle e mandare contributi."
+    },
+    "consultations": {
+      "title": "Consultazioni",
+      "text": "Una frase alla volta dici se sei d'accordo, non d'accordo o passi, e puoi aggiungere la tua. Così emergono i punti su cui c'è consenso e quelli che dividono."
+    },
+    "representatives": {
+      "title": "Candidati ed eletti",
+      "text": "Fai domande a chi ha aderito e sostieni quelle degli altri: le più sostenute salgono in cima. Le risposte sono pubbliche, e accanto a ogni nome si vede a quante domande ha risposto."
+    },
+    "organizations": {
+      "title": "Per le organizzazioni",
+      "text": "Associazioni, comitati, partiti e istituzioni chiedono uno spazio; dopo la verifica possono aprire percorsi, gestire incontri in presenza e online, moderare, eseguire sorteggi ed esportare le sottoscrizioni. Ogni percorso si può incorporare nel proprio sito con una riga di codice."
+    }
+  },
+  "privacy": {
+    "title": "Privacy e dati",
+    "draft": "Schema di lavoro: prima della messa online va completato con i dati del gestore della piattaforma e rivisto da chi si occupa di protezione dei dati.",
+    "responsibilities": {
+      "title": "Chi è responsabile di cosa",
+      "text": "Per l'account (email, nome e cognome, nome con cui compari, lingua) il titolare è il gestore della piattaforma. Per ogni percorso il titolare è l'organizzazione che lo promuove: la piattaforma tratta i dati per suo conto, come responsabile del trattamento, sulla base di un accordo scritto."
+    },
+    "organizationSees": {
+      "title": "Cosa vede l'organizzazione",
+      "text": "Di chi sottoscrive un'iniziativa: nome, cognome, comune e data. L'email solo se la persona ha spuntato il consenso a essere ricontattata. Di chi si candida a un'assemblea: niente di nominativo prima del sorteggio; dopo, solo i contatti delle persone estratte e delle riserve. Ogni esportazione resta annotata in un registro."
+    },
+    "collection": {
+      "title": "Cosa raccogliamo, e cosa no",
+      "text": "Solo ciò che serve: email, nome e cognome per registrarti, i dati che scrivi tu quando sottoscrivi o ti candidi. Le caratteristiche demografiche servono soltanto al sorteggio di quell'assemblea. Nessun tracciamento, nessuna pubblicità. Sul sito c'è un solo cookie, quello della sessione; quando entri, il servizio di accesso usa i suoi cookie tecnici, solo per l'accesso."
+    },
+    "rights": {
+      "title": "I tuoi diritti, subito",
+      "text": "Dal tuo spazio scarichi tutti i tuoi dati in un file e puoi eliminare l'account in qualsiasi momento: sottoscrizioni, voti, candidature e iscrizioni vengono cancellati, insieme alle tue credenziali di accesso; proposte e commenti restano senza nome. Puoi ritirare una sottoscrizione o una candidatura dalla pagina del percorso."
+    },
+    "security": {
+      "title": "Sicurezza",
+      "text": "La password la scegli tu e la conserva solo il servizio di accesso, in forma non leggibile: il resto della piattaforma non la vede mai. Dopo troppi tentativi sbagliati l'accesso si blocca per qualche minuto, e gli amministratori usano un secondo fattore. I dati stanno su server nell'Unione europea, con copie di sicurezza cifrate."
+    }
+  }
+}

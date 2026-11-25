@@ -45,8 +45,8 @@ the JSON fields use.
 
 ## People and accounts
 
-- A person **registers** on Keycloak's registration page with first name, last name, email and
-  password, and confirms the email before the first login. Keycloak keeps the credentials;
+- A person **registers** on Keycloak's registration page with email, first name and last
+  name, then follows the link in the verification e-mail and sets a password. Keycloak keeps the credentials;
   the app never sees them.
 - The app's `Account` is linked to the Keycloak user by its id (`sub`) and holds the display
   name, the language (`it` or `en`) and the person's data. It is created on the first

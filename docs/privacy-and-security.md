@@ -5,15 +5,17 @@ one is a bug even if every test passes. Use the `privacy-check` skill for any ch
 touches them. The privacy rules started from the original prototype's `/privacy` page; the
 login is ours (Keycloak).
 
-**Status:** not built yet.
+**Status:** partly built (scaffold, 2026-11-25): the web session cookie, the security headers,
+and token validation in the API. Login, roles in use, export and deletion are not built yet.
 
 ## Registration and login
 
 - **People register before taking part.** Reading public pages needs no account; signing,
   voting, applying, commenting and proposing do. "Entra" and "Registrati" send the person to
   Keycloak's login and registration pages.
-- **Keycloak owns credentials.** Registration asks for first name, last name, email and
-  password, and requires a verified email before the first login. Password reset, brute-force
+- **Keycloak owns credentials.** Registration asks for email, first name and last name; the
+  link in the verification e-mail then asks the person to set a password. No login is
+  possible before the email is verified. Password reset, brute-force
   protection and the password policy are Keycloak's (see
   [infrastructure.md](infrastructure.md), "The Keycloak realm"). The app never receives,
   stores or logs a password.
@@ -48,8 +50,9 @@ login is ours (Keycloak).
 
 ## Session and requests (web)
 
-- On the app's origin there is one cookie: the web session id, `__Host-` prefixed,
-  `Secure; HttpOnly; SameSite=Lax; Path=/`. Tokens live in Valkey, never in the cookie, in
+- On the app's origin there is one cookie: the web session id, signed, `__Host-partecipa`
+  with `Secure; HttpOnly; SameSite=Lax; Path=/` (on plain `http://localhost` it is named
+  `partecipa`, without `Secure`). Tokens live in Valkey, never in the cookie, in
   `localStorage` or in the page.
 - Keycloak sets its own cookies on its own host, only for its login session.
 - Every state-changing request to the web server (a form `action`) checks that the `Origin`

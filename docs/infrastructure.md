@@ -3,7 +3,7 @@
 The local development stack, the Keycloak realm, the databases, and how the system runs and
 scales in production.
 
-**Status:** not built yet. The scaffold creates `infra/`.
+**Status:** the local stack and the realm are built (scaffold). Production is not built yet.
 
 ## Local stack (`infra/compose.yaml`)
 
@@ -46,8 +46,11 @@ export. The dev export holds dev-only secrets; production secrets come from the 
 - **Login:** email as username, registration enabled, email verification required, password
   reset allowed, "remember me" off, brute-force detection on. Password policy: at least 12
   characters, not the email *(assumption)*.
-- **Registration form:** first name, last name, email, password. The display name defaults
-  to "first name + last name" and can be changed on `/io`.
+- **Registration in two parts** (Keycloak 26.8.2 with email verification, observed
+  2026-11-25): the form asks email, first name and last name; the verification e-mail's link
+  then asks the person to set a password, where the password policy applies. Nobody can claim
+  an address without owning it. The display name defaults to "first name + last name" and can
+  be changed on `/io`.
 - **Languages:** `it` (default) and `en`.
 - **SMTP:** Mailpit in dev (`mailpit:1025`); a real provider in production.
 - **Clients:**
@@ -55,13 +58,18 @@ export. The dev export holds dev-only secrets; production secrets come from the 
     `<PUBLIC_ORIGIN>/auth/callback`, post-logout redirect `<PUBLIC_ORIGIN>/`. An audience
     mapper adds `partecipa-api` to its access tokens.
   - `partecipa-api-admin`: service account only, with the `realm-management` role
-    `manage-users` and nothing else. Used by the API to delete users.
+    `manage-users` and nothing else, and the default client scope `kc-admin-api`: since
+    Keycloak 26.8 the Admin API accepts only tokens whose audience that scope adds. Used by
+    the API to delete users.
 - **Roles:** realm role `admin`. Administrators must set up two-factor authentication (OTP)
   *(assumption)*.
 - **Token lifetimes:** access token 5 minutes, refreshed by the web server; SSO session idle
   30 minutes, max 10 hours *(assumption)*.
 - **Dev users:** the realm export holds one administrator for `dev` only. Regular users are
-  created by registering, as in production.
+  created by registering, as in production. Credentials: [infra/README.md](../infra/README.md).
+- **Admin two-factor:** for now the dev administrator has the required action "configure
+  OTP". Enforcing OTP for every account with the `admin` role (a conditional OTP flow) comes
+  with build-order step 2.
 
 ## Databases and migrations
 
@@ -90,8 +98,7 @@ export. The dev export holds dev-only secrets; production secrets come from the 
 ```
 
 - `web` and `api` are stateless and scale by adding instances behind the load balancer.
-  Readiness: `/api/v1/actuator/health/readiness` *(assumption on the path)*, and a `/healthz`
-  route on `web`.
+  Readiness: `/api/v1/actuator/health/readiness`, and a `/healthz` route on `web`.
 - Keycloak runs at least two nodes on its own database.
 - PostgreSQL: managed service with automatic backups and point-in-time recovery. Valkey:
   managed, or a small replicated instance; losing it logs everyone out, nothing else.

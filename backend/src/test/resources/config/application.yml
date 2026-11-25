@@ -1,0 +1,7 @@
+# Tests never reach Keycloak: tokens are signed in the test (see shared/security tests).
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://issuer.test/realms/partecipa

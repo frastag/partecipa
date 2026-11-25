@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+    "https://checkstyle.org/dtds/configuration_1_3.dtd">
+<!-- Rules the formatter (google-java-format via Spotless) can't check.
+     See docs/code-style-java.md. -->
+<module name="Checker">
+  <property name="severity" value="error"/>
+  <module name="TreeWalker">
+    <module name="AvoidStarImport"/>
+    <module name="IllegalCatch">
+      <property name="illegalClassNames" value="Exception, Throwable, RuntimeException, Error"/>
+    </module>
+    <module name="EqualsHashCode"/>
+    <module name="NeedBraces"/>
+    <module name="OneTopLevelClass"/>
+    <module name="MissingSwitchDefault"/>
+    <module name="MagicNumber">
+      <property name="ignoreHashCodeMethod" value="true"/>
+      <property name="ignoreAnnotation" value="true"/>
+    </module>
+    <module name="IllegalImport">
+      <property name="illegalPkgs" value="sun, com.sun, org.junit.Assert, java.util.Random"/>
+      <!-- The API is stateless (docs/architecture.md, "Scaling rules"). -->
+      <property name="illegalClasses" value="jakarta.servlet.http.HttpSession"/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="format" value="Instant\.now\(\)|Math\.random\(\)"/>
+      <property name="message" value="Inject a Clock or a seeded RandomGenerator (docs/code-style-java.md)"/>
+    </module>
+  </module>
+</module>
