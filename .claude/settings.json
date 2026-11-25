@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./mvnw verify:*)",
+      "Bash(./mvnw test:*)",
+      "Bash(./mvnw spotless:apply)",
+      "Bash(./mvnw spotless:check)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run format:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm ci)",
+      "Bash(node .agents/skills/parity-check/parity.mjs:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh repo view:*)",
+      "Bash(gh auth status)"
+    ],
+    "deny": [
+      "Bash(pkill:*)",
+      "Bash(killall:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Edit(**/.env)"
+    ],
+    "ask": [
+      "Edit(backend/src/main/resources/db/migration/**)"
+    ]
+  }
+}
