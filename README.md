@@ -3,9 +3,9 @@
 Civic participation platform: popular initiatives, citizens' assemblies selected by lot,
 consultations, and public questions to candidates and elected representatives.
 
-The definitive rewrite of the prototype at <https://prototipo.michelangelogigli.it/>, with a
-React front end (React Router, server-side rendered) and a Spring Boot back end, keeping the
-same pages, URLs, texts and privacy rules.
+A Spring Boot REST API, a React web front end (React Router, server-side rendered), Keycloak
+for registration and login, PostgreSQL with Flyway migrations. Modular (Spring Modulith) and
+built to scale horizontally.
 
 > **Status (2026-11-25):** documentation and agent setup only, no application code yet. The
 > code is built step by step following the "Build order" in
@@ -14,36 +14,40 @@ same pages, URLs, texts and privacy rules.
 ## Project layout
 
 ```
-backend/        Spring Boot API, Java 25, Maven wrapper (not created yet)
-frontend/       React + React Router (framework mode, SSR), Tailwind CSS v4 (not created yet)
+backend/        Spring Boot API, Java 25, Maven wrapper, Spring Modulith (not created yet)
+frontend/       React + React Router (SSR, backend for frontend), Tailwind CSS v4 (not created yet)
+infra/          Docker Compose: PostgreSQL, Keycloak (realm as code), Valkey, Mailpit (not created yet)
 docs/           what the platform does and how it is built — start at docs/README.md
 .agents/        tool-neutral agent skills and knowledge pages
 .claude/        Claude Code: CLAUDE.md, settings, symlinks to skills and style rules
 .github/        CI, Dependabot, issue and PR templates
-tmp/            task folders and the snapshot of the original (git-ignored)
+tmp/            task folders and the snapshot of the original prototype (git-ignored)
 AGENTS.md       instructions for AI agents (and a good summary for humans)
 ```
 
 ## Commands
 
 ```bash
+# local stack
+docker compose -f infra/compose.yaml up -d   # PostgreSQL :5432, Keycloak :8180, Valkey :6379, Mailpit :8025
+
 # back end
 cd backend
-./mvnw verify                 # tests + formatting + static checks + coverage
-./mvnw spring-boot:run        # http://localhost:8080, profile dev with demo data
+./mvnw verify                 # tests (Testcontainers, needs Docker) + formatting + checks + coverage
+./mvnw spring-boot:run        # http://localhost:8080/api/v1, profile dev with demo data
 
 # front end
 cd frontend
 npm ci
-npm run dev                   # http://localhost:5173, /api, /lingua, /io/dati.json proxied to 8080
+cp .env.example .env          # once
+npm run dev                   # http://localhost:5173
 npm run lint && npm test && npm run build
-npm run build && npm start    # production SSR server on http://localhost:3000
-npm run format                # Prettier
-npm run e2e                   # Playwright
+npm run api:types             # regenerate API types from the running back end's OpenAPI
+npm run e2e                   # Playwright against the full local stack
 ```
 
-In the `dev` profile no e-mail is sent: the login page shows the magic link, as the original
-demo does.
+To try registration locally: open http://localhost:5173, choose "Registrati", then open the
+verification e-mail in Mailpit at http://localhost:8025.
 
 ## Documentation
 

@@ -1,13 +1,14 @@
-# Knowledge: what this rewrite depends on
+# Knowledge: what this project depends on
 
-Facts about the original site and the development machine, as observed. These are dated,
+Facts about the development machine and the original prototype (inspiration only), as
+observed. These are dated,
 perishable facts: the original is a live demo that can change, and tools get updated. The code
 wins over this for our own behaviour, which is described in [docs/](../../docs/README.md).
 
 | File | Read when |
 |---|---|
-| [original-site.md](original-site.md) | building or checking a page; a text, field or rule of the original; the demo data |
-| [toolchain.md](toolchain.md) | a command is missing or fails; Java, Node, Maven, Docker, `gh` on this machine |
+| [toolchain.md](toolchain.md) | a command is missing or fails; Java, Node, Maven, Docker, `gh` on this machine; pinned versions |
+| [original-site.md](original-site.md) | looking for ideas from the original prototype: its pages, texts, rules, demo data |
 
 ## Editing rules
 

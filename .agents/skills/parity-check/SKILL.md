@@ -1,9 +1,11 @@
 ---
 name: parity-check
-description: Use when a page of our app must be compared with the same page of the original site (after building or changing a page, a text, a form or a layout), when the user asks "does it match the original?", or to refresh the snapshot of the original in tmp/original-snapshot. Not for reviewing personal-data rules (use privacy-check) or for unit-test failures.
+description: Use only when the user asks to compare a page of our app with the original prototype ("how does the prototype do it?", "compare with the original"), or to refresh the snapshot in tmp/original-snapshot. The prototype is inspiration, not a specification, so this is never a required step. Not for privacy reviews (privacy-check) or test failures.
 ---
 
-# Parity with the original
+# Comparison with the original prototype
+
+The prototype is inspiration only: differences are information for the user, not bugs.
 
 Reduces a page of the original (<https://prototipo.michelangelogigli.it/>) and the same page
 of our SSR server to an outline (headings, texts, links, form fields with `required`, buttons)
@@ -15,8 +17,9 @@ and diffs them. The script is `parity.mjs` next to this file; read its header be
   (`npm run dev` in `frontend/`, which already renders on the server). To check the
   production build, use `npm run build && npm start` and pass `--local http://localhost:3000`. Start them in the background from the worktree if they aren't up,
   and note them in `handover.md`.
-- Logged-in pages need `--login` and the `PARTECIPA_EMAIL` environment variable. Ask the user
-  for the email if it isn't set; never write it into a file.
+- `--login` logs in only on the original (demo magic link, email from `PARTECIPA_EMAIL`; ask
+  the user if it isn't set and never write it into a file). Our side stays anonymous, because
+  our login goes through Keycloak: compare logged-in pages by looking at them in a browser.
 - The script only reads the original, apart from the demo login. Never add POSTs to it.
 
 ## Compare one page
@@ -30,7 +33,7 @@ node .agents/skills/parity-check/parity.mjs compare --path <url path> \
 - `--mask-numbers` replaces numbers with `#`: use it when the only differences are counts and
   dates that drift on the demo. Run once without it to see that the numbers are formatted the
   same way.
-- Compare every page the change touches, and for a process page every type it affects
+- For a process page, the original's examples of each type are
   (`/o/associazione-luca-coscioni/iniziativa-di-esempio`, `/o/eumans/european-citizens-assembly-demo`,
   `/o/eumans/consultazione-di-esempio`, `/o/associazione-luca-coscioni/candidati-ed-eletti-esempio`).
 - Check the English UI too when labels changed: add `--lang en`. Both sides first get
@@ -40,13 +43,13 @@ node .agents/skills/parity-check/parity.mjs compare --path <url path> \
 
 ## Read the diff
 
-Sort every difference into one of these, and write the list in `tmp/<task>/parity/README.md`:
+Summarise the differences for the user in `tmp/<task>/parity/README.md`, grouped as:
 
-- **Sample data** (names, counts, dates that changed on the demo): expected, no action.
+- **Sample data**: names, counts, dates. No action.
 - **Not built yet**: a block the plan leaves for a later step; name the step.
-- **Intended**: an accepted difference (e.g. form actions point to our API); say who decided.
-- **Bug**: a different label, missing field, missing `required`, different order, different
-  link. Fix it, or report it.
+- **Ours by design**: a difference our docs decide (login, URLs, texts).
+- **Idea worth considering**: something the prototype does that we don't. Propose it to the
+  user; never change our behaviour only because the prototype differs.
 
 The outline doesn't show styling. Also look at the page in a browser at 375 px and 1280 px next
 to the original, and say what you compared.
@@ -57,6 +60,5 @@ to the original, and say what you compared.
 node .agents/skills/parity-check/parity.mjs crawl --out tmp/original-snapshot [--login]
 ```
 
-Refresh when the snapshot is older than a week, or a page is missing from it. Compare the new
-`outline.txt` with the old one; if the original's behaviour or texts changed, update
-`.agents/knowledge/original-site.md` with the date and tell the user.
+Refresh only when the user asks or a page is missing from it. If the prototype's behaviour or
+texts changed, update `.agents/knowledge/original-site.md` with the date.

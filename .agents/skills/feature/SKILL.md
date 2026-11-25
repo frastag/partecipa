@@ -1,6 +1,6 @@
 ---
 name: feature
-description: Use when the user asks to develop a new feature or a behaviour change in Partecipa ("/feature …", "/feature #12", "make the initiative page…", "add the lottery", "do the scaffold"), including the next step of the build order in docs/architecture.md, or resumes one. Not for comparing a page with the original (use parity-check), a privacy review alone (privacy-check), bug investigations or one-line fixes.
+description: Use when the user asks to develop a new feature or a behaviour change in Partecipa ("/feature …", "/feature #12", "make the initiative page…", "add the lottery", "do the scaffold"), including the next step of the build order in docs/architecture.md, or resumes one. Not for a privacy review alone (privacy-check), comparing with the original prototype (parity-check), bug investigations or one-line fixes.
 ---
 
 # Develop a feature
@@ -46,8 +46,9 @@ From here on, the worktree is your working copy:
   checkout. Before every edit, check that the path starts with the worktree path.
 - Start every shell command with `cd <worktree>/<backend|frontend> &&`. The shell can return to
   the main checkout between commands.
-- Run `npm ci` once in the worktree's `frontend/`. Run the servers, tests and the
-  `parity-check` skill from the worktree, so they measure the feature's code.
+- Run `npm ci` once in the worktree's `frontend/` and copy `.env.example` to `.env`. Run the
+  servers and tests from the worktree, so they measure the feature's code. The Docker stack
+  (`infra/compose.yaml`) is shared: start it from the main checkout if it isn't up.
 - The only files you write in the main checkout are the task folder's (`tmp/<task>/`).
 
 If the user drops the feature, offer to remove the worktree and the branch as the `session`
@@ -57,12 +58,15 @@ skill describes. Don't remove them unasked.
 
 - In the worktree, read `docs/README.md` and follow "Routing by task" to the topic docs. Read
   the code they point to.
-- Read the original's behaviour for the feature in `.agents/knowledge/original-site.md` and in
-  the snapshot `tmp/original-snapshot/` (refresh it with `parity-check` if it is older than a
-  week or lacks the page). Copy texts exactly from the original.
+- For ideas, look at what the original prototype does in `.agents/knowledge/original-site.md`
+  and `tmp/original-snapshot/`. It is inspiration only: propose what to take from it in the
+  plan, don't copy it silently.
 - Check the "Behaviour that must not regress" list in AGENTS.md. A feature that conflicts with
-  it needs the user's explicit decision. If the feature touches personal data, plan a
-  `privacy-check` step.
+  it needs the user's explicit decision. If the feature touches personal data, login, tokens or
+  roles, plan a `privacy-check` step.
+- Decide which Spring Modulith module and which front-end feature folder own the change. A
+  change that makes one module reach into another's internals is a design problem: propose an
+  event or a public service method instead.
 
 ## 4. Plan and agree
 
@@ -73,7 +77,8 @@ Write `plan.md` in the task folder from `plan-template.md`:
 - **API contract first:** the endpoints and JSON shapes, added to `docs/routes.md` in the
   first step, so back end and front end are built against the same contract.
 - **Steps:** small and individually verifiable, normally migration → service with tests →
-  controller with slice test → front-end service → page → parity check. Each step names its
+  controller with slice test → regenerated API types → front-end API module → page → browser
+  check. Keycloak realm changes are a step of their own, exported to `infra/keycloak/`. Each step names its
   files and how it will be verified.
 - **Docs and knowledge pages** to update.
 - **Progress table:** every step `todo`.
@@ -88,10 +93,10 @@ For each step:
 1. Set the step to `doing` in the progress table.
 2. Make the change in the worktree, following `docs/code-style-java.md` or
    `docs/code-style-react.md`, with tests for the logic.
-3. Run the step's verification. Save outputs that matter (parity diffs, coverage) in the task
-   folder.
-4. Set the step to `done` with one line of evidence (e.g. "42 tests passed", "parity: only
-   sample-data differences"), or to `blocked` with the reason. Then update `handover.md`. Do
+3. Run the step's verification. Save outputs that matter (test summaries, coverage,
+   screenshots) in the task folder.
+4. Set the step to `done` with one line of evidence (e.g. "42 tests passed", "page
+   checked at 375 and 1280 px"), or to `blocked` with the reason. Then update `handover.md`. Do
    this in the same turn as the step, not later.
 
 If a step reveals that the plan is wrong, stop. Update the plan, mark it as "Plan changed
@@ -103,8 +108,8 @@ When all steps are `done`:
 
 - run both quality gates once more on the whole worktree (`./mvnw verify`; `npm run lint &&
   npm test && npm run build`);
-- run `parity-check` on every page the feature touches, and `privacy-check` if personal data
-  is involved;
+- look at every page the feature touches in a browser, at 375 and 1280 px, in Italian and
+  English, and run `privacy-check` if personal data, login, tokens or roles are involved;
 - check that every doc listed in the plan was updated, and mark the build-order step and the
   "not built yet" markers accordingly;
 - report in two or three sentences what the feature does now, how it was verified, and what was

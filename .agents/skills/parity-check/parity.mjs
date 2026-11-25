@@ -8,7 +8,8 @@
 //                           [--local http://localhost:5173] [--login] [--mask-numbers]
 //                           [--lang en]
 //
-// --login reads the email from PARTECIPA_EMAIL. --lang switches both sessions first with
+// --login reads the email from PARTECIPA_EMAIL and logs in on the original only: our login goes
+// through Keycloak, so our side stays anonymous. --lang switches both sessions first with
 // GET /lingua/<code>, the request the language link makes: the language lives in the session,
 // so it changes nothing outside our own session. Exit code: 0 always for crawl; for compare,
 // 0 when the outlines are identical, 1 when they differ, 2 on errors.
@@ -79,18 +80,6 @@ async function loginOriginal(client, email) {
   if (!link) throw new Error('original: demo login link not found (is it still a demo?)');
   const confirm = await client.request(link);
   await client.form(new URL(link).pathname, { csrf: csrfOf(confirm.text) });
-}
-
-async function loginLocal(client, email) {
-  // Our API (docs/routes.md): magic link with devLink in the dev profile, CSRF via XSRF-TOKEN.
-  await client.request('/api/me');
-  const xsrf = () => ({ 'X-XSRF-TOKEN': client.cookies.get('XSRF-TOKEN') ?? '', 'Content-Type': 'application/json' });
-  const sent = await client.request('/api/auth/magic-link', {
-    method: 'POST', body: JSON.stringify({ email, next: '/' }), headers: xsrf(),
-  });
-  const token = JSON.parse(sent.text).devLink?.split('/').pop();
-  if (!token) throw new Error('local: no devLink in the magic-link response (dev profile?)');
-  await client.request(`/api/auth/magic-link/${token}`, { method: 'POST', headers: xsrf() });
 }
 
 // Reduce a page to what a person reads and can do, one line per block.
@@ -177,7 +166,7 @@ async function compare(opts) {
   if (opts.login) {
     const email = requireEmail();
     await loginOriginal(original, email);
-    await loginLocal(local, email);
+    console.log('logged in on the original only; our side is anonymous');
   }
   // After the login, which may start a new session.
   if (opts.lang) {

@@ -1,59 +1,79 @@
 # Privacy and security
 
-The rules on personal data and access, taken from the original's `/privacy` page and
-behaviour. They are product requirements: a change that breaks one is a bug even if every test
-passes. Use the `privacy-check` skill for any change that touches them.
+The rules on personal data and access. They are product requirements: a change that breaks
+one is a bug even if every test passes. Use the `privacy-check` skill for any change that
+touches them. The privacy rules started from the original prototype's `/privacy` page; the
+login is ours (Keycloak).
 
 **Status:** not built yet.
 
-## Login
+## Registration and login
 
-- **Magic link.** `POST /api/auth/magic-link` with an email creates a single-use token valid
-  20 minutes and e-mails `https://<host>/entra/<token>`. The reply never says whether the email
-  already has an account.
-- **Confirmation by POST.** Opening the link shows "Entra come <email>" and a "Conferma ed
-  entra" button. Only the POST consumes the token and logs in. A GET never logs anyone in,
-  because mail scanners prefetch links.
-- **First login** creates the account and redirects to `/io?next=…` with the message
-  "Benvenuta, benvenuto. Scrivi il nome con cui vuoi comparire."
-- **Tokens** are random (at least 256 bits, URL-safe), stored only as a hash, and expire.
-  The `next` parameter accepts only local paths (no open redirect).
-- **Administrators** log in at `/entra/password`; passwords are hashed with a slow algorithm
-  (Spring Security `DelegatingPasswordEncoder`, Argon2 or bcrypt). Rate-limit both logins.
-- In `dev` no e-mail is sent: the page shows "Ambiente di prova, nessuna email parte davvero"
-  and the link, as in the original. This must be impossible in production (profile check at
-  startup).
+- **People register before taking part.** Reading public pages needs no account; signing,
+  voting, applying, commenting and proposing do. "Entra" and "Registrati" send the person to
+  Keycloak's login and registration pages.
+- **Keycloak owns credentials.** Registration asks for first name, last name, email and
+  password, and requires a verified email before the first login. Password reset, brute-force
+  protection and the password policy are Keycloak's (see
+  [infrastructure.md](infrastructure.md), "The Keycloak realm"). The app never receives,
+  stores or logs a password.
+- **Flow (BFF):**
+  1. `GET /entra?next=<path>`: the web server stores `next` (local paths only, no open
+     redirect), a PKCE verifier, `state` and `nonce` in the session, and redirects to
+     Keycloak's authorization endpoint with `ui_locales`. `/registrati` does the same with
+     Keycloak's registration page.
+  2. `GET /auth/callback`: the web server checks `state`, exchanges the code (client secret +
+     PKCE verifier), validates the ID token and `nonce`, rotates the session id, stores the
+     tokens in the session, calls `GET /api/v1/me` (which creates the account on the first
+     login), and redirects to `next`.
+  3. Before each API call the web server refreshes the access token if it expires within 30
+     seconds. A failed refresh ends the session and the page asks to log in again.
+  4. `POST /esci` destroys the session and redirects to Keycloak's end-session endpoint with
+     `id_token_hint`, so the Keycloak session ends too.
+- **Administrators** are accounts with the realm role `admin`, and must use two-factor
+  authentication. There is no separate admin login.
 
-## Session and requests
+## Tokens and the API
 
-- One cookie: the session, `Secure; HttpOnly; SameSite=Lax; Path=/`. No other cookie, no
-  `localStorage` for personal data.
-- CSRF protection on every state-changing request, with the `X-XSRF-TOKEN` header added by
-  the front end's API client (`app/core/api`) when a loader or action calls the back end. **Open:** Spring Security's cookie token repository adds an
-  `XSRF-TOKEN` cookie, which conflicts with "one cookie" above; the original keeps the token in
-  the session. To be decided in the account step of the build order.
-- The session also holds the language (`/lingua/{code}`), so anonymous visitors get a session
-  cookie, as on the original.
+- The API accepts only `Authorization: Bearer <JWT>` and keeps no session. It validates the
+  signature (JWKS from the issuer), `iss`, `exp` and that `aud` contains `partecipa-api`.
+  Roles come from `realm_access.roles`.
+- The account is identified by the token's `sub`. The API never trusts a user id sent in a
+  request body or path for "who am I".
 - Authorisation is checked in the back end on every request (`@PreAuthorize` or service
-  checks), never only by hiding a button.
+  checks), never only by hiding a button. Every endpoint that is not public has a test for
+  the forbidden case.
+- The API has no cookies, so it needs no CSRF token. Public read endpoints are reachable
+  without a token.
 
-## Headers (as the original)
+## Session and requests (web)
+
+- On the app's origin there is one cookie: the web session id, `__Host-` prefixed,
+  `Secure; HttpOnly; SameSite=Lax; Path=/`. Tokens live in Valkey, never in the cookie, in
+  `localStorage` or in the page.
+- Keycloak sets its own cookies on its own host, only for its login session.
+- Every state-changing request to the web server (a form `action`) checks that the `Origin`
+  header equals `PUBLIC_ORIGIN`, on top of `SameSite=Lax`.
+- Session lifetime follows Keycloak's: when the refresh token is no longer valid, the web
+  session ends.
+- Anonymous visitors get a session only when they switch language or start a login.
+
+## Headers
 
 ```
-Content-Security-Policy: default-src 'self'; img-src 'self' data:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+Content-Security-Policy: default-src 'self'; img-src 'self' data:; base-uri 'self';
+  form-action 'self'; frame-ancestors 'none'; script-src 'self' 'nonce-<per request>'
 X-Content-Type-Options: nosniff
 Referrer-Policy: same-origin
 X-Frame-Options: DENY
-X-Robots-Tag: noindex, nofollow        (while it is a demo)
+Strict-Transport-Security: max-age=31536000; includeSubDomains   (production)
 ```
 
-`/embed/**` is the exception: it allows framing (`frame-ancestors *`, no `X-Frame-Options`).
-SSR inline state must work under this CSP: React Router inlines the loader data and the
-hydration script, so pages rendered by React Router add
-`script-src 'self' 'nonce-<per request>'` to the policy above, with the nonce passed to
-`renderToPipeableStream`, `<Scripts>` and `<ScrollRestoration>` (`frontend/app/entry.server.tsx`),
-never `'unsafe-inline'`. Spring Boot sends the policy above
-unchanged on its own responses (`shared/security/SecurityConfig`).
+- `/embed/**` is the exception: it allows framing (`frame-ancestors *`, no `X-Frame-Options`).
+- Pages rendered by React Router get a per-request nonce, passed to `renderToPipeableStream`,
+  `<Scripts>` and `<ScrollRestoration>` (`frontend/app/entry.server.tsx`). Never
+  `'unsafe-inline'`.
+- The API sends `nosniff`, `no-store` on personal responses, and no CSP (it serves JSON only).
 
 ## Who sees what
 
@@ -67,19 +87,23 @@ unchanged on its own responses (`shared/security/SecurityConfig`).
 | selected members and reserves | no | contacts after the draw | yes |
 | votes | only counts | only counts | yes |
 
-Every export by an organisation is written to the export log (who, when, which process,
-which fields).
+The email lives in Keycloak and in the token. The app copies it into the account only where
+a rule needs it (a consented signature) *(assumption)*. Every export by an organisation is
+written to the export log (who, when, which process, which fields).
 
 ## The user's rights
 
-- `/io/dati.json` downloads everything about the user (shape in [routes.md](routes.md)).
-- Account deletion requires typing `ELIMINA`. It deletes signatures, votes, applications,
-  registrations and memberships at once, and keeps proposals and comments without the name.
-  It runs in one transaction; a test checks every table that references the user.
+- `/io/dati.json` downloads everything about the user: the account, everything they wrote,
+  signed, voted and registered for, and their Keycloak profile (name, email, creation date).
+- Account deletion requires typing `ELIMINA`. In one transaction it deletes signatures, votes,
+  applications, registrations and memberships, and keeps proposals and comments without the
+  name. After the commit it deletes the Keycloak user; if that call fails, a retried module
+  event finishes it. A test checks every table that references the account.
 - A signature or an application can be withdrawn from the process page.
 
-## Data collection
+## Data collection and logs
 
-Only what is needed: the email to log in, what the person writes when signing or applying.
-Strata answers serve only that assembly's lottery. No tracking, no ads, no third-party
-requests at runtime. Logs never contain emails, tokens or names (log ids).
+Only what is needed: the registration data Keycloak asks for, and what the person writes when
+signing or applying. Strata answers serve only that assembly's lottery. No tracking, no ads,
+no third-party requests at runtime. Logs never contain emails, tokens, names or cities: log
+account ids and Keycloak `sub`s.

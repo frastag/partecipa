@@ -1,6 +1,6 @@
 ---
 name: privacy-check
-description: Use before saying a change is done when it stores, shows, exports, logs or deletes personal data (accounts, login, signatures, applications, the lottery, votes, comments, organisation exports, /io/dati.json, account deletion), or when the user asks whether something respects privacy. Not for comparing pages with the original (use parity-check).
+description: Use before saying a change is done when it stores, shows, exports, logs or deletes personal data (accounts, signatures, applications, the lottery, votes, comments, organisation exports, /io/dati.json, account deletion), or touches registration, login, tokens, sessions, roles or the Keycloak realm, or when the user asks whether something respects privacy or security. Not for comparing pages with the original prototype (parity-check).
 ---
 
 # Privacy check
@@ -24,13 +24,23 @@ rule marked as respected, broken or not affected, and evidence.
      forbidden case (another user, a non-member, a visitor)?
    - **Export:** does `/io/dati.json` include the new data? Is every organisation export
      written to the export log?
-   - **Deletion:** does account deletion remove the new user-owned rows, or anonymise them if
-     they are contributions or comments? Is there a test?
-   - **Logs:** no email, name, token or city in log calls or exception messages.
+   - **Deletion:** does account deletion remove the new user-owned rows (through the
+     `AccountDeleted` event), or anonymise them if they are contributions or comments? Is
+     there a test? Is the Keycloak user still deleted?
+   - **Logs:** no email, name, token or city in log calls or exception messages, on both the
+     API and the web server.
    - **Collection:** is every new field needed? Is it optional where the original makes it
      optional?
-   - **Login and session** (if touched): single-use 20-minute link, POST confirmation, local
-     `next` only, no extra cookies, CSRF on writes, security headers unchanged.
+   - **Tokens:** do tokens stay on the web server (`*.server.ts`, Valkey), never in the page,
+     a cookie value or `localStorage`? Does the API still validate issuer, audience and
+     expiry, and take the person only from `sub`?
+   - **Login and session** (if touched): PKCE, `state` and `nonce` checked, local `next` only,
+     session id rotated at login, one `__Host-` cookie, `Origin` check on writes, logout ends
+     the Keycloak session too, security headers unchanged.
+   - **Keycloak realm** (if touched): email verification still required, brute-force
+     protection on, two-factor for admins, the admin service account still limited to
+     `manage-users`, no new client with broader scopes or redirect URIs than needed.
+   - **Stateless API:** no new HTTP session or in-memory state about people.
 3. Run the tests that cover these rules and save the output in the task folder.
 4. Write `tmp/<task>/privacy-check.md`: one line per question with the verdict and the evidence,
    then the issues found. Fix the broken ones, or stop and tell the user if a fix changes

@@ -1,4 +1,8 @@
-# The original site
+# The original prototype
+
+**Inspiration only** (decided by the user on 2026-11-25): our docs are the specification,
+and this page records what the prototype does, so that ideas can be taken from it on purpose.
+Its login (magic link, no registration) is not ours: we use Keycloak with registration.
 
 <https://prototipo.michelangelogigli.it/>, observed on 2026-11-18 with a GET-only crawl (38
 URLs), logged in as a regular user (not an organisation member, not an administrator). A

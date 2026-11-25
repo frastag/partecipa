@@ -8,8 +8,8 @@ labels: enhancement
 ## Goal
 <!-- What people, organisations or administrators should be able to do. Two or three sentences. -->
 
-## On the original site
-<!-- Pages of https://prototipo.michelangelogigli.it/ that show the behaviour. Optional. -->
+## Inspiration
+<!-- Pages of the original prototype (https://prototipo.michelangelogigli.it/) or other sites with ideas worth taking. Optional. -->
 
 ## Examples
 <!-- Who does what, and what they expect to see. -->

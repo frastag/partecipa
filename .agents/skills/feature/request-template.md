@@ -8,13 +8,13 @@
 
 <one or two sentences: what people or organisations can do afterwards>
 
-## Behaviour on the original
-<pages and URLs of https://prototipo.michelangelogigli.it/ that show it, with the texts to copy>
+## Inspiration from the original prototype
+<optional: pages of https://prototipo.michelangelogigli.it/ with ideas worth taking, and what we do differently>
 
 ## Examples
 | Who | Does | Sees |
 |---|---|---|
-| <visitor / logged-in person / organisation member / admin> | <action> | <expected result> |
+| <visitor / registered person / organisation member / admin> | <action> | <expected result> |
 
 ## Must not change
 - <behaviour that must stay as it is; see "Behaviour that must not regress" in AGENTS.md>

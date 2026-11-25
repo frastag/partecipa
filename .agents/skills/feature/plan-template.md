@@ -4,11 +4,14 @@
 **Agreed with the user:** <yyyy-mm-dd, or "not yet">
 
 ## Approach
-<a few sentences: how the feature works, which back-end feature package and front-end feature
-folder it lives in>
+<a few sentences: how the feature works, which Spring Modulith module and front-end feature
+folder it lives in, which events it publishes or consumes>
 
 API contract (also written to `docs/routes.md` in step 1):
-- `<METHOD /api/...>` — <request> → <response>
+- `<METHOD /api/v1/...>` — <request> → <response> · access: <public / registered / organisation member / admin>
+
+Migrations and Keycloak realm changes:
+- <migration file / realm setting, or "none">
 
 Rejected alternatives:
 - <alternative> — <why not>
@@ -17,7 +20,7 @@ Assumptions (the user can correct these):
 - <assumption>
 
 ## Steps
-1. **<step>** — files: `<path>` · verify: <unit test / slice test / IT / vitest / e2e / parity-check / privacy-check / browser>
+1. **<step>** — files: `<path>` · verify: <unit test / module test / slice test / IT / vitest / e2e / privacy-check / browser>
 2. …
 
 ## Docs to update

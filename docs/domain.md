@@ -1,16 +1,18 @@
 # Domain
 
-The concepts of Partecipa, their rules, and the English names we use for them in code. The
-behaviour comes from the original site (observed 2026-11-18, see
-[.agents/knowledge/original-site.md](../.agents/knowledge/original-site.md)).
+The concepts of Partecipa, their rules, and the English names we use for them in code. Many
+ideas come from the original prototype (observed 2026-11-18, see
+[.agents/knowledge/original-site.md](../.agents/knowledge/original-site.md)); this page is
+the specification.
 
 **Status:** not built yet. Update each section's status when its feature is merged.
 
 ## Glossary
 
-Italian is what users read and what URLs and the public JSON use. English is what the code uses.
+Italian is what users read and what page URLs use. English is what the code, the API paths and
+the JSON fields use.
 
-| Italian (UI, URL, JSON) | English (code) | Meaning |
+| Italian (UI, URL) | English (code, API) | Meaning |
 |---|---|---|
 | percorso | `Process` (entity `ParticipationProcess`, to avoid `java.lang.Process`) | a participation process run by an organisation |
 | tipo: iniziativa / assemblea / consultazione / elettorale | `ProcessType.INITIATIVE / ASSEMBLY / CONSULTATION / ELECTORAL` | the four process types |
@@ -38,22 +40,29 @@ Italian is what users read and what URLs and the public JSON use. English is wha
 | profilo: candidato / eletto | `Profile`, `ProfileRole.CANDIDATE / ELECTED` | who answers questions in an electoral process |
 | fase | `Phase` | a step of the process timeline; one is current (`ora`), later ones are `poi` |
 | il mio spazio | account page | `/io` |
+| registrati, entra, esci | register, log in, log out | handled by Keycloak through the web server |
 | gestione | management | `/gestione` |
 
 ## People and accounts
 
-- An account is an email, a display name and a language (`it` or `en`). It is created at the
-  first login. There is no password, except for administrators (`is_admin`).
+- A person **registers** on Keycloak's registration page with first name, last name, email and
+  password, and confirms the email before the first login. Keycloak keeps the credentials;
+  the app never sees them.
+- The app's `Account` is linked to the Keycloak user by its id (`sub`) and holds the display
+  name, the language (`it` or `en`) and the person's data. It is created on the first
+  authenticated call to the API. The display name starts as "first name + last name" and can
+  be changed on `/io`.
+- Administrators are accounts with the Keycloak realm role `admin`.
 - Public pages show a person as **first name + initial of the surname** ("Laura G."), built
   from the display name. The full name appears only where the person chose it (the signer
   list).
 - Deleting an account removes signatures, votes, applications, event registrations and
-  organisation memberships; contributions and comments stay with the author shown as
-  anonymous. See [privacy-and-security.md](privacy-and-security.md).
+  organisation memberships, then the Keycloak user; contributions and comments stay with the
+  author shown as anonymous. See [privacy-and-security.md](privacy-and-security.md).
 
 ## Organisations
 
-- Anyone logged in can request a space with name, kind (`associazione`, `comitato`,
+- Any registered person can request a space with name, kind (`associazione`, `comitato`,
   `partito`, `istituzione`), website and a two-line description. The request is verified by
   an administrator before the organisation goes online.
 - Members of an organisation can open and manage its processes, moderate, run the lottery
@@ -89,7 +98,7 @@ Italian is what users read and what URLs and the public JSON use. English is wha
 
 ## Contributions, votes and comments
 
-- A logged-in person can write a proposal (title + text) on any open process. Statements,
+- A registered person can write a proposal (title + text) on any open process. Statements,
   questions and recommendations have their own forms.
 - **One vote per person per contribution.** Voting again with the same value keeps it;
   another value replaces it. Support counts and percentages are computed from stored votes.
@@ -143,4 +152,4 @@ Italian is what users read and what URLs and the public JSON use. English is wha
 ## Meetings
 
 - A meeting has a date and time, a title, a place and/or an online link, a description and an
-  optional capacity. Logged-in people register; the page shows "registered / capacity".
+  optional capacity. Registered people sign up; the page shows "registered / capacity".

@@ -45,13 +45,20 @@ only for what the code cannot say.
 - Show a pending state with `useNavigation()` / `useFetcher().state` and an error state with
   the route's `ErrorBoundary`.
 
-## Data loading and the API
+## Data loading, auth and the API
 
-- Only `<feature>.api.ts` calls the back end, through the shared client in `core/api`. Loaders
-  and actions call the API module; components never call `fetch`.
-- The shared client forwards the incoming request's `Cookie` header, adds the CSRF header on
-  state-changing requests, passes `Set-Cookie` back to the browser, and turns a
-  `ProblemDetail` into a typed error carrying its `code`.
+- Only `<feature>.api.ts` calls the API, through the shared client in `core/api`. Loaders
+  and actions call the API module; components never call `fetch`. A feature never imports
+  another feature's files.
+- The shared client takes the access token from the session (refreshing it when needed, via
+  `core/auth`), sends it as `Authorization: Bearer`, and turns a `ProblemDetail` into a typed
+  error carrying its `code`. A 401 from the API ends the session and redirects to `/entra`.
+- Use the generated OpenAPI types (`core/api/schema.ts`, `npm run api:types`) for requests
+  and responses; never hand-write a type the API already describes.
+- Protected routes call `requireUser(request)` from `core/auth` at the top of their loader and
+  action. Every `action` also passes the `Origin` check (done once in `core/auth`).
+- Code that touches tokens, secrets or Valkey lives in `*.server.ts` files, so it can never be
+  bundled for the browser.
 - A loader throws `data(null, { status: 404 })` for a missing resource, so the error boundary
   renders the 404 page with the right status.
 - Never access `window`, `document` or `localStorage` during render: code that needs them runs
@@ -60,6 +67,7 @@ only for what the code cannot say.
 ## Forms
 
 - `<Form method="post">` handled by the route's `action`, so the form works before hydration.
+  Registration, login and password forms are Keycloak's, not ours.
   Use `useFetcher()` for in-place actions (a vote, a support) that must not navigate.
 - Every field has a visible `<label>` that wraps the control or uses `htmlFor`, as in the
   original. Field `name`s are the API's field names.
@@ -72,8 +80,8 @@ only for what the code cannot say.
 
 - No user-visible text in components: every string is a translation key in
   `app/locales/it.json` and `en.json`, read with `useTranslation()`. Keys are English and
-  grouped by feature (`initiative.signForm.submit`). The Italian text is copied **exactly**
-  from the original. Use `<Trans>` for texts with links or markup.
+  grouped by feature (`initiative.signForm.submit`). Italian is the reference language; every
+  key exists in both files. Use `<Trans>` for texts with links or markup.
 - Process content (titles, descriptions, contributions) comes from the API in its own
   language and is never translated.
 - Dates are shown as the original does: `dd/MM/yyyy` and `dd/MM/yyyy HH:mm`, with
@@ -82,10 +90,9 @@ only for what the code cannot say.
 
 ## Styles
 
-- Tailwind CSS v4 utilities in `className`, and the original's semantic classes (`btn`,
-  `btn secondario`, `pillola`, `riquadro`, `meta`, `largo`, `stretto`, `tipo-iniziativa`…)
-  defined once in the stylesheets with `@apply` or plain CSS. Keep the original's class
-  names: they make the parity check readable.
+- Tailwind CSS v4 utilities in `className`, and a small set of semantic component classes
+  (`btn`, `pill`, `card`, `type-initiative`…) defined once in the stylesheets with `@apply`
+  or plain CSS.
 - Design tokens (type colours, `inchiostro`, font) are CSS custom properties in `@theme`.
   No hard-coded colours in components, and no `style={…}`: the CSP has no `'unsafe-inline'`.
 - Animations respect `prefers-reduced-motion` (the counters and reveal effects stop).
